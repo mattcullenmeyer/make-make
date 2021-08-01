@@ -1,115 +1,116 @@
 import api
 import helper
 
-
 # Get existing data from Digital Ocean
 metadata = api.get('metadata')
 metric = api.get('metric')
 
-data = metadata.merge(metric, 
-    left_on='ticker', right_on='ticker', suffixes=(None, '_x'))
+data = metadata.merge(
+    metric,
+    left_on='ticker',
+    right_on='ticker',
+    suffixes=(None, '_x')
+)
 
 data = data.fillna('')
 
-
 for i in data.index:
-    
+
     # Print progress
-    print(f'#{i+1} {helper.progress(i+1, data.index)}')
-    
+    print(f'#{i + 1} {helper.progress(i + 1, data.index)}')
+
     tmp = data.loc[i]
-    
+
     ticker = tmp.ticker
     sector = tmp.sector
     industry = tmp.industry
-    
+
     sec = data[data.sector == sector]
     ind = data[data.industry == industry]
-    
-    
+
     col = 'pe_value'
     pe_sec_median, pe_sec_rank, pe_ind_median, pe_ind_rank = (
         helper.all_rank(tmp[col], sec[col], ind[col]))
-    
+
     col = 'pb_value'
     pb_sec_median, pb_sec_rank, pb_ind_median, pb_ind_rank = (
         helper.all_rank(tmp[col], sec[col], ind[col]))
-    
+
     col = 'ps_value'
     ps_sec_median, ps_sec_rank, ps_ind_median, ps_ind_rank = (
         helper.all_rank(tmp[col], sec[col], ind[col]))
-    
+
     col = 'pcf_value'
     pcf_sec_median, pcf_sec_rank, pcf_ind_median, pcf_ind_rank = (
         helper.all_rank(tmp[col], sec[col], ind[col]))
-    
+
     col = 'eve_value'
     eve_sec_median, eve_sec_rank, eve_ind_median, eve_ind_rank = (
         helper.all_rank(tmp[col], sec[col], ind[col]))
-    
+
     value_avg = helper.mean([pe_sec_rank, pb_sec_rank, ps_sec_rank,
-                      pcf_sec_rank, eve_sec_rank])
-    
+                             pcf_sec_rank, eve_sec_rank])
+
     col = 'mom_12_value'
     mom_12_sec_median, mom_12_sec_rank, mom_12_ind_median, mom_12_ind_rank = (
         helper.all_rank(tmp[col], sec[col], ind[col]))
-    
+
     col = 'mom_6_value'
     mom_6_sec_median, mom_6_sec_rank, mom_6_ind_median, mom_6_ind_rank = (
         helper.all_rank(tmp[col], sec[col], ind[col]))
-    
-    #mom_avg = helper.mean([mom_12_sec_rank, mom_6_sec_rank])
+
+    # mom_avg = helper.mean([mom_12_sec_rank, mom_6_sec_rank])
     mom_avg = mom_12_sec_rank
-    
+
     col = 'vol_12_value'
     vol_12_sec_median, vol_12_sec_rank, vol_12_ind_median, vol_12_ind_rank = (
         helper.all_inv(tmp[col], sec[col], ind[col]))
-    
+
     col = 'beta_value'
     beta_sec_median, beta_sec_rank, beta_ind_median, beta_ind_rank = (
         helper.all_inv(tmp[col], sec[col], ind[col]))
-    
-    #vol_avg = helper.mean([vol_12_sec_rank, beta_sec_rank])
+
+    # vol_avg = helper.mean([vol_12_sec_rank, beta_sec_rank])
     vol_avg = vol_12_sec_rank
-    
+
     col = 'asset_turn_value'
-    (asset_turn_sec_median, asset_turn_sec_rank, asset_turn_ind_median, 
-         asset_turn_ind_rank) = helper.all_rank(tmp[col], sec[col], ind[col])
-    
+    (asset_turn_sec_median, asset_turn_sec_rank, asset_turn_ind_median,
+     asset_turn_ind_rank) = helper.all_rank(tmp[col], sec[col], ind[col])
+
     col = 'gross_profit_value'
-    (gross_profit_sec_median, gross_profit_sec_rank, gross_profit_ind_median, 
-         gross_profit_ind_rank) = helper.all_rank(tmp[col], sec[col], ind[col])
-    
+    (gross_profit_sec_median, gross_profit_sec_rank, gross_profit_ind_median,
+     gross_profit_ind_rank) = helper.all_rank(tmp[col], sec[col], ind[col])
+
     col = 'gross_margin_value'
-    (gross_margin_sec_median, gross_margin_sec_rank, gross_margin_ind_median, 
-         gross_margin_ind_rank) = helper.all_rank(tmp[col], sec[col], ind[col])
-    
+    (gross_margin_sec_median, gross_margin_sec_rank, gross_margin_ind_median,
+     gross_margin_ind_rank) = helper.all_rank(tmp[col], sec[col], ind[col])
+
     col = 'return_asset_value'
-    (return_asset_sec_median, return_asset_sec_rank, return_asset_ind_median, 
-         return_asset_ind_rank) = helper.all_rank(tmp[col], sec[col], ind[col])
+    (return_asset_sec_median, return_asset_sec_rank, return_asset_ind_median,
+     return_asset_ind_rank) = helper.all_rank(tmp[col], sec[col], ind[col])
 
     profit_avg = helper.mean([asset_turn_sec_rank, gross_profit_sec_rank,
-                           gross_margin_sec_rank, return_asset_sec_rank])
+                              gross_margin_sec_rank, return_asset_sec_rank])
 
     col = 'ext_fin_value'
-    (ext_fin_sec_median, ext_fin_sec_rank, ext_fin_ind_median, 
-         ext_fin_ind_rank) = helper.all_inv(tmp[col], sec[col], ind[col])
+    (ext_fin_sec_median, ext_fin_sec_rank, ext_fin_ind_median,
+     ext_fin_ind_rank) = helper.all_inv(tmp[col], sec[col], ind[col])
 
     col = 'cf_debt_value'
-    (cf_debt_sec_median, cf_debt_sec_rank, cf_debt_ind_median, 
-         cf_debt_ind_rank) = helper.all_rank(tmp[col], sec[col], ind[col])
+    (cf_debt_sec_median, cf_debt_sec_rank, cf_debt_ind_median,
+     cf_debt_ind_rank) = helper.all_rank(tmp[col], sec[col], ind[col])
 
     finance_avg = helper.mean([ext_fin_sec_rank, cf_debt_sec_rank])
 
     col = 'accrual_value'
-    (accrual_sec_median, accrual_sec_rank, accrual_ind_median, 
-         accrual_ind_rank) = helper.all_inv(tmp[col], sec[col], ind[col])
-    
+    (accrual_sec_median, accrual_sec_rank, accrual_ind_median,
+     accrual_ind_rank) = helper.all_inv(tmp[col], sec[col], ind[col])
+
     safety_avg = accrual_sec_rank
-    
+
     quality_avg = helper.mean([vol_avg, profit_avg, finance_avg, safety_avg])
     overall_avg = helper.mean([value_avg, mom_avg, quality_avg])
-    
+
     metric_data = {
         'ticker': f'{ticker}',
         'pe_sec_median': f'{helper.num_str(pe_sec_median, 3)}',
@@ -183,10 +184,10 @@ for i in data.index:
         'finance_avg': f'{helper.num_str(finance_avg, 3)}',
         'safety_avg': f'{helper.num_str(safety_avg, 3)}',
         'quality_avg': f'{helper.num_str(quality_avg, 3)}',
-        'composite_avg': f'{helper.num_str(overall_avg, 3)}'      
+        'composite_avg': f'{helper.num_str(overall_avg, 3)}'
     }
-    
-    # Update metric table in Digial Ocean
+
+    # Update metric table in Digital Ocean
     if ticker in metric.ticker.values:
         r = api.put('metric', ticker, metric_data)
         if r.status_code != 200:

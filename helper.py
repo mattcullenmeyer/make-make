@@ -5,7 +5,7 @@ from scipy import stats
 
 
 # Function to wait between requests
-def wait(seconds=1):
+def wait(seconds=2):
     time.sleep(random.random() * seconds + seconds)
 
 

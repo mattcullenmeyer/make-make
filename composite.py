@@ -40,7 +40,6 @@ for i in data.index:
     col = 'composite_avg'
     composite_rank = helper.ranking(tmp[col], sec[col])
 
-
     metadata_data = {
         'ticker': f'{ticker}',
         'value_rank': f'{helper.num_str(value_rank, 0)}',

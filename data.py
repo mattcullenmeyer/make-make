@@ -17,7 +17,7 @@ metrics = api.get('metric')
 # Generate list of ticker symbols
 ticker_symbols = tickers.ticker.values
 ticker_symbols.sort()
-
+ticker_symbols = ticker_symbols[4444:]
 
 cnt = 0
 for ticker in ticker_symbols:
@@ -26,7 +26,7 @@ for ticker in ticker_symbols:
     cnt += 1
     print(f'{ticker} #{cnt} {helper.progress(cnt, ticker_symbols)}')
     
-    #ticker_id = tickers[tickers.ticker == ticker].id.values[0]
+    # ticker_id = tickers[tickers.ticker == ticker].id.values[0]
     
     print('\tIncome Statement')
     # Get Income Statement from Stockrow
@@ -52,14 +52,13 @@ for ticker in ticker_symbols:
     # Get Cash Flow from Stockrow
     cf_stmt = scraper.get_stockrow(ticker, 'cf')
     helper.wait()
-    
-    
+
     ''' METADATA '''
     
     # price / earnings
     price = helper.yahoo_number(yahoo, 'financialData', 'currentPrice')
     eps = helper.yahoo_number(yahoo, 'defaultKeyStatistics', 'trailingEps')
-    pe = 0
+    pe = np.nan
     if abs(eps) != 0:
         pe = price / eps
     pe_value = 1 / pe
@@ -106,7 +105,7 @@ for ticker in ticker_symbols:
     sector = helper.yahoo_text(yahoo, 'summaryProfile', 'sector')
     industry = helper.yahoo_text(yahoo, 'summaryProfile', 'industry')
     market_cap = helper.yahoo_number(yahoo, 'summaryDetail', 'marketCap')
-    #company_name = yahoo['price']['longName'].replace("'","''")
+    # company_name = yahoo['price']['longName'].replace("'","''")
     company_name = helper.yahoo_text(yahoo, 'price', 'longName').replace("'", "''")
     company_name_ticker = company_name + ' (' + ticker + ')'
 
@@ -138,14 +137,12 @@ for ticker in ticker_symbols:
     if not prices.empty:
         last_updated = prices.loc[0, 'date']
 
-
     # Update ticker table in Digital Ocean
     ticker_data = {
          'ticker': f'{ticker}',
         'company_name_ticker': f'{company_name_ticker}'   
     }
-    
-    
+
     # api currently can't handle periods in slug
     if ticker.find('.') == -1:
         r = api.put('ticker', ticker, ticker_data)
@@ -178,7 +175,6 @@ for ticker in ticker_symbols:
         'last_updated': f'{last_updated}'
     }
 
-
     # Update metadata table in Digial Ocean
     if ticker_id in metadata.ticker.values:
         r = api.put('metadata', ticker_id, metadata_data)
@@ -190,8 +186,7 @@ for ticker in ticker_symbols:
         if r.status_code != 201:
             print('Something went wrong with metadata request')
             break
-    
-    
+
     ''' METRICS '''
     
     # Momentum
@@ -202,10 +197,8 @@ for ticker in ticker_symbols:
     
     # Volatility
     vol_12_value = helper.vol_calc(prices, 252)
-    
-    
+
     # Fundamentals
-    
     total_revenue = helper.read_is('Revenue', inc_stmt)
     total_assets = helper.read_bs('Total Assets', bal_sheet)
     gross_profit = helper.read_is('Gross Profit', inc_stmt)
@@ -217,8 +210,6 @@ for ticker in ticker_symbols:
     net_debt = helper.read_bs('Net Debt', bal_sheet)
         
     total_debt = net_debt + cash
-
-
     
     if total_revenue != 0:
         
@@ -237,8 +228,7 @@ for ticker in ticker_symbols:
     else:
         asset_turn_value = np.nan
         gross_margin_value = np.nan
-    
-    
+
     if total_assets != 0:
         
         if gross_profit != 0:
@@ -263,8 +253,7 @@ for ticker in ticker_symbols:
         gross_profit_value = np.nan
         return_asset_value = np.nan
         ext_fin_value = np.nan
-        
-    
+
     if op_cf != 0:
         
         if total_debt != 0:
@@ -282,7 +271,6 @@ for ticker in ticker_symbols:
     else:
         cf_debt_value = np.nan
         accrual_value = np.nan
-        
 
     metric_data = {
         'ticker': f'{ticker_id}',
@@ -304,7 +292,7 @@ for ticker in ticker_symbols:
         'accrual_value': f'{helper.num_str(accrual_value)}'
     }    
 
-    # Update metric table in Digial Ocean
+    # Update metric table in Digital Ocean
     if ticker_id in metrics.ticker.values:
         r = api.put('metric', ticker_id, metric_data)
         if r.status_code != 200:
