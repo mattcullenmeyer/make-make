@@ -1,4 +1,4 @@
-##Dependencies  
+## Dependencies  
 `pip install numpy`  
 `pip install pandas`  
 `pip install scipy`  
