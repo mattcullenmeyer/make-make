@@ -28,7 +28,7 @@ def get_yahoo(ticker):
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36'
     }
 
-    attempt = 0;
+    attempt = 0
     success = False
     while attempt < 2 and success == False:
         try:
@@ -91,6 +91,8 @@ def get_stockrow(ticker, stmt):
 
     attempt = 0;
     success = False
+    # r = requests.get(url)
+    # print(r.status_code)
     while attempt < 2 and success == False:
         try:
             raw_data = pd.read_excel(url, index_col=0)

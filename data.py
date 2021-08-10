@@ -17,7 +17,7 @@ metrics = api.get('metric')
 # Generate list of ticker symbols
 ticker_symbols = tickers.ticker.values
 ticker_symbols.sort()
-ticker_symbols = ticker_symbols[4444:]
+ticker_symbols = ticker_symbols[:5]
 
 cnt = 0
 for ticker in ticker_symbols:
