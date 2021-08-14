@@ -39,9 +39,12 @@ def get_yahoo(ticker):
             attempt += 1
 
     if success == True:
-        data = r.json()
+        try:
+            data = r.json()
 
-        result = data['quoteSummary']['result']
+            result = data['quoteSummary']['result']
+        except:
+            result = {}
 
         if result:
             return result[0]
