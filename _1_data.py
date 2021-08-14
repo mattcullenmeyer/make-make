@@ -1,8 +1,8 @@
 import numpy as np
 
-import api
-import helper
-import scraper
+import _api as api
+import _helper as helper
+import _scraper as scraper
 
 
 # Get existing data from Digital Ocean
@@ -17,7 +17,7 @@ metrics = api.get('metric')
 # Generate list of ticker symbols
 ticker_symbols = tickers.ticker.values
 ticker_symbols.sort()
-ticker_symbols = ticker_symbols[:5]
+# ticker_symbols = ticker_symbols[:5]
 
 cnt = 0
 for ticker in ticker_symbols:
